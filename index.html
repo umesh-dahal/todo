@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f8f9fa;
+      text-align: center;
+    }
+    .container {
+      max-width: 500px;
+      margin: auto;
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .task-inputs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    select, input {
+      padding: 5px;
+      font-size: 16px;
+    }
+    button {
+      cursor: pointer;
+      padding: 8px;
+      font-size: 14px;
+      border: none;
+      border-radius: 5px;
+      margin: 5px;
+    }
+    .delete-button {
+      background-color: red;
+      color: white;
+    }
+    .reset-button {
+      background-color: black;
+      color: white;
+    }
+    .sort-button {
+      background-color: gray;
+      color: white;
+    }
+    .add-button {
+      background-color: green;
+      color: white;
+    }
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    li {
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 5px;
+      font-size: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 0.3s;
+      cursor: pointer;
+    }
+    li:hover {
+      background: #f1f1f1;
+    }
+    .completed {
+      text-decoration: line-through;
+      color: gray;
+    }
+    .task-text {
+      padding: 5px;
+      border-radius: 5px;
+    }
+    .p1 {
+      background-color: red;
+      color: white;
+    }
+    .p2 {
+      background-color: yellow;
+    }
+    .p3 {
+      background-color: green;
+      color: white;
+    }
+  </style>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => loadList());
+
+    function toggleCompleted(event) {
+      event.target.classList.toggle("completed");
+      saveList();
+    }
+
+    function resetList() {
+      document.getElementById("task-list").innerHTML = "";
+      localStorage.removeItem("todoList");
+    }
+
+    function sortTasks() {
+      let list = document.getElementById("task-list");
+      let tasks = Array.from(list.children).filter(task => !task.classList.contains("separator"));
+      
+      tasks.sort((a, b) => {
+        let typeA = a.dataset.type;
+        let typeB = b.dataset.type;
+        let priorityA = parseInt(a.dataset.priority.replace("P", ""));
+        let priorityB = parseInt(b.dataset.priority.replace("P", ""));
+        return typeA.localeCompare(typeB) || priorityA - priorityB;
+      });
+      
+      list.innerHTML = "";
+      let hasM = false;
+      tasks.forEach(task => {
+        if (!hasM && task.dataset.type === "M") {
+          let separator = document.createElement("li");
+          separator.textContent = "------M Begins-------";
+          separator.style.fontWeight = "bold";
+          separator.classList.add("separator");
+          list.appendChild(separator);
+          hasM = true;
+        }
+        list.appendChild(task);
+      });
+    }
+
+    function addTask() {
+      let task = document.getElementById("task").value.trim();
+      let type = document.getElementById("type").value;
+      let priority = document.getElementById("priority").value;
+
+      if (!task) return;
+      
+      let list = document.getElementById("task-list");
+      let li = document.createElement("li");
+      li.dataset.type = type;
+      li.dataset.priority = priority;
+      
+      let span = document.createElement("span");
+      span.textContent = `${task} [${type}] [${priority}]`;
+      span.classList.add("task-text", priority.toLowerCase());
+      li.onclick = toggleCompleted;
+      
+      let delBtn = document.createElement("button");
+      delBtn.textContent = "Del";
+      delBtn.classList.add("delete-button");
+      delBtn.onclick = function(event) {
+        event.stopPropagation();
+        li.remove();
+        saveList();
+      };
+      
+      li.appendChild(span);
+      li.appendChild(delBtn);
+      list.appendChild(li);
+      
+      saveList();
+      document.getElementById("task").value = "";
+    }
+  </script>
+</head>
+<body>
+  <div class="container">
+    <h1>To-Do List</h1>
+    <div>
+      <button class="reset-button" onclick="resetList()">Reset</button>
+      <button class="sort-button" onclick="sortTasks()">Sort</button>
+      <button class="add-button" onclick="addTask()">+</button>
+    </div>
+    <div class="task-inputs">
+      <input type="text" id="task" placeholder="Enter task...">
+      <select id="type">
+        <option value="H">H</option>
+        <option value="M">M</option>
+      </select>
+      <select id="priority">
+        <option value="P1">P1</option>
+        <option value="P2">P2</option>
+        <option value="P3">P3</option>
+      </select>
+    </div>
+    <ul id="task-list"></ul>
+  </div>
+</body>
+</html>
