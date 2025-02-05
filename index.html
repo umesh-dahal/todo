@@ -1,220 +1,208 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 20px;
-      background-color: #f8f9fa;
-      text-align: center;
-    }
-    .container {
-      max-width: 500px;
-      margin: auto;
-      background: white;
-      padding: 15px;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-    .task-inputs {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-top: 10px;
-      align-items: center;
-    }
-    .task-options {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      width: 100%;
-    }
-    select, input, button {
-      padding: 10px;
-      font-size: 16px;
-      width: auto;
-      max-width: 150px;
-    }
-    input {
-      width: 90%;
-      max-width: 400px;
-    }
-    button {
-      cursor: pointer;
-      border: none;
-      border-radius: 5px;
-      background-color: green;
-      color: white;
-    }
-    ul {
-      list-style-type: none;
-      padding: 0;
-      margin-top: 10px;
-    }
-    li {
-      padding: 10px;
-      margin: 5px 0;
-      border-radius: 5px;
-      font-size: 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #f1f1f1;
-      cursor: pointer;
-    }
-    .p1 span {
-      background-color: red;
-      color: white;
-      padding: 5px;
-      border-radius: 5px;
-    }
-    .p2 span {
-      background-color: yellow;
-      padding: 5px;
-      border-radius: 5px;
-    }
-    .p3 span {
-      background-color: green;
-      color: white;
-      padding: 5px;
-      border-radius: 5px;
-    }
-    .delete-button {
-      background-color: red;
-      color: white;
-      border: none;
-      padding: 5px;
-      border-radius: 3px;
-      cursor: pointer;
-    }
-    .section-title {
-      font-weight: bold;
-      text-align: center;
-      margin-top: 10px;
-    }
-    .completed {
-      text-decoration: line-through;
-      text-decoration-thickness: 4px;
-      color: black;
-      font-weight: bold;
-    }
-  </style>
-  <script>
-    document.addEventListener("DOMContentLoaded", loadTasks);
-
-    function addTask() {
-      let taskText = document.getElementById("task").value.trim();
-      let type = document.getElementById("type").value;
-      let priority = document.getElementById("priority").value;
-      if (!taskText) return;
-      
-      type = type === "H" ? "T" : "N";
-      let list = (type === "T") ? document.getElementById("task-list-h") : document.getElementById("task-list-m");
-      
-      let li = createTaskElement(taskText, priority, false);
-      list.appendChild(li);
-      document.getElementById("task").value = "";
-      sortTasks(list);
-      saveTasks();
-    }
-
-    function createTaskElement(text, priority, completed) {
-      let li = document.createElement("li");
-      li.classList.add(priority.toLowerCase());
-      li.dataset.priority = priority;
-      
-      let span = document.createElement("span");
-      span.textContent = text;
-      li.appendChild(span);
-      
-      if (completed) {
-        li.classList.add("completed");
-      }
-      
-      li.onclick = function() {
-        li.classList.toggle("completed");
-        saveTasks();
-      };
-      
-      let deleteButton = document.createElement("button");
-      deleteButton.textContent = "Delete";
-      deleteButton.classList.add("delete-button");
-      deleteButton.onclick = function(event) {
-        event.stopPropagation();
-        li.remove();
-        saveTasks();
-      };
-      
-      li.appendChild(deleteButton);
-      return li;
-    }
-
-    function sortTasks(list) {
-      let tasks = Array.from(list.children);
-      tasks.sort((a, b) => {
-        let priorityA = parseInt(a.dataset.priority.replace("P", ""));
-        let priorityB = parseInt(b.dataset.priority.replace("P", ""));
-        return priorityA - priorityB;
-      });
-      
-      list.innerHTML = "";
-      tasks.forEach(task => list.appendChild(task));
-    }
-
-    function saveTasks() {
-      let tasks = { T: [], N: [] };
-      document.querySelectorAll("#task-list-h li").forEach(li => {
-        tasks.T.push({ text: li.querySelector("span").textContent, priority: li.dataset.priority, completed: li.classList.contains("completed") });
-      });
-      document.querySelectorAll("#task-list-m li").forEach(li => {
-        tasks.N.push({ text: li.querySelector("span").textContent, priority: li.dataset.priority, completed: li.classList.contains("completed") });
-      });
-      localStorage.setItem("todoList", JSON.stringify(tasks));
-    }
-
-    function loadTasks() {
-      let savedTasks = JSON.parse(localStorage.getItem("todoList")) || { T: [], N: [] };
-      let listH = document.getElementById("task-list-h");
-      let listM = document.getElementById("task-list-m");
-      
-      listH.innerHTML = "";
-      listM.innerHTML = "";
-      
-      savedTasks.T.forEach(task => {
-        let li = createTaskElement(task.text, task.priority, task.completed);
-        listH.appendChild(li);
-      });
-      savedTasks.N.forEach(task => {
-        let li = createTaskElement(task.text, task.priority, task.completed);
-        listM.appendChild(li);
-      });
-    }
-  </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=devi-bce, initial-scale=1.0">
+    <title>TASK TO DO</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 375px;
+            margin: auto;
+            padding: 20px;
+            background-color: #f8f8f8;
+            text-align: left;
+        }
+        h2 {
+            text-align: left;
+        }
+        .category, .category-card {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 10px 0;
+            background: white;
+            max-width: 100%;
+        }
+        .category h3 {
+            text-transform: uppercase;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        button {
+            background: green;
+            color: white;
+            border: none;
+            padding: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            width: 35px;
+            height: 35px;
+            text-align: center;
+        }
+        .item-list button {
+            background: red;
+            flex-shrink: 0;
+        }
+        input, select {
+            padding: 5px;
+            font-size: 14px;
+        }
+        input[type="date"], select {
+            flex: 1;
+        }
+        input[type="time"] {
+            step: 300; /* 5-minute interval */
+            flex: 1;
+        }
+        .input-container {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .row {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .full-width {
+            width: 100%;
+        }
+        .item-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .item-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 0;
+            width: 100%;
+        }
+        .item-details {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            flex-grow: 1;
+        }
+        .task-name {
+            font-weight: bold;
+            text-transform: capitalize;
+            cursor: pointer;
+        }
+        .task-time {
+            font-size: 12px;
+            color: gray;
+        }
+        .strikethrough {
+            text-decoration: line-through;
+            color: gray;
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>To-Do List</h1>
-    <div class="task-inputs">
-      <input type="text" id="task" placeholder="Enter task...">
-      <div class="task-options">
-        <select id="type">
-          <option value="H">T</option>
-          <option value="M">N</option>
-        </select>
-        <select id="priority">
-          <option value="P1">P1</option>
-          <option value="P2">P2</option>
-          <option value="P3">P3</option>
-        </select>
-        <button onclick="addTask()">Add</button>
-      </div>
+    <h2>TASK TO DO</h2>
+    <div class="category-card">
+        <div class="input-container">
+            <div class="row">
+                <input type="date" id="taskDate" style="flex: 2;">
+                <select id="taskPriority" style="flex: 1;">
+                    <option value="P1">P1</option>
+                    <option value="P2">P2</option>
+                    <option value="P3">P3</option>
+                </select>
+            </div>
+            <div class="row">
+                <input type="text" id="categoryName" placeholder="Enter Task" class="full-width">
+            </div>
+            <div class="row">
+                <input type="time" id="startTime" value="00:00" step="300">
+                <input type="time" id="endTime" value="00:00" step="300">
+                <button onclick="addTask()">+</button>
+            </div>
+        </div>
     </div>
-    <div class="section-title">TODAY</div>
-    <ul id="task-list-h"></ul>
-    <div class="section-title">NEXT DAY</div>
-    <ul id="task-list-m"></ul>
-  </div>
+    <div id="categories"></div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById("taskDate").valueAsDate = new Date();
+            loadCategories();
+        });
+
+        function formatDate(dateString) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const taskDate = new Date(dateString);
+            taskDate.setHours(0, 0, 0, 0);
+            
+            const dayDifference = Math.round((taskDate - today) / (1000 * 60 * 60 * 24));
+            const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+            
+            if (dayDifference === 0) return "Today";
+            if (dayDifference === 1) return "Tomorrow";
+            if (dayDifference > 1 && dayDifference < 7) return dayNames[taskDate.getDay()];
+            return dateString;
+        }
+
+        function saveCategories(categories) {
+            localStorage.setItem("taskCategories", JSON.stringify(categories));
+        }
+
+        function loadCategories() {
+            const categories = JSON.parse(localStorage.getItem("taskCategories")) || {};
+            const container = document.getElementById("categories");
+            container.innerHTML = "";
+            Object.keys(categories).forEach(date => renderCategory(date, categories[date]));
+        }
+
+        function addTask() {
+            const taskName = document.getElementById("categoryName").value.trim();
+            const date = document.getElementById("taskDate").value;
+            const startTime = document.getElementById("startTime").value;
+            const endTime = document.getElementById("endTime").value;
+            const priority = document.getElementById("taskPriority").value;
+            if (!taskName || !date || !startTime || !endTime) return;
+            let categories = JSON.parse(localStorage.getItem("taskCategories")) || {};
+            if (!categories[date]) {
+                categories[date] = [];
+            }
+            categories[date].push({ name: taskName, startTime, endTime, priority, struck: false });
+            categories[date].sort((a, b) => a.startTime.localeCompare(b.startTime));
+            saveCategories(categories);
+            loadCategories();
+            document.getElementById("categoryName").value = "";
+        }
+
+        function toggleStrikeThrough(date, index) {
+            let categories = JSON.parse(localStorage.getItem("taskCategories"));
+            categories[date][index].struck = !categories[date][index].struck;
+            saveCategories(categories);
+            loadCategories();
+        }
+
+        function deleteTask(date, index) {
+            let categories = JSON.parse(localStorage.getItem("taskCategories"));
+            categories[date].splice(index, 1);
+            if (categories[date].length === 0) {
+                delete categories[date];
+            }
+            saveCategories(categories);
+            loadCategories();
+        }
+
+        function renderCategory(date, tasks) {
+            const container = document.getElementById("categories");
+            let categoryDiv = document.createElement("div");
+            categoryDiv.classList.add("category");
+            categoryDiv.innerHTML = `<h3>${formatDate(date)}</h3><ul class="item-list"></ul>`;
+            tasks.forEach((task, index) => {
+                const li = document.createElement("li");
+                li.innerHTML = `<div class="item-details"><span class="task-name ${task.struck ? 'strikethrough' : ''}" onclick="toggleStrikeThrough('${date}', ${index})" style="color: ${task.priority === "P1" ? "red" : task.priority === "P2" ? "blue" : "green"};">${task.name.charAt(0).toUpperCase() + task.name.slice(1)}</span><span class="task-time">${task.startTime} - ${task.endTime}</span></div> <button onclick="deleteTask('${date}', ${index})">X</button>`;
+                categoryDiv.querySelector(".item-list").appendChild(li);
+            });
+            container.appendChild(categoryDiv);
+        }
+    </script>
 </body>
 </html>
