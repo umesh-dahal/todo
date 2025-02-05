@@ -85,7 +85,9 @@
     }
     .completed {
       text-decoration: line-through;
-      color: gray;
+      text-decoration-thickness: 4px;
+      color: black;
+      font-weight: bold;
     }
   </style>
   <script>
@@ -97,7 +99,8 @@
       let priority = document.getElementById("priority").value;
       if (!taskText) return;
       
-      let list = (type === "H") ? document.getElementById("task-list-h") : document.getElementById("task-list-m");
+      type = type === "H" ? "T" : "N";
+      let list = (type === "T") ? document.getElementById("task-list-h") : document.getElementById("task-list-m");
       
       let li = createTaskElement(taskText, priority, false);
       list.appendChild(li);
@@ -150,29 +153,29 @@
     }
 
     function saveTasks() {
-      let tasks = { H: [], M: [] };
+      let tasks = { T: [], N: [] };
       document.querySelectorAll("#task-list-h li").forEach(li => {
-        tasks.H.push({ text: li.querySelector("span").textContent, priority: li.dataset.priority, completed: li.classList.contains("completed") });
+        tasks.T.push({ text: li.querySelector("span").textContent, priority: li.dataset.priority, completed: li.classList.contains("completed") });
       });
       document.querySelectorAll("#task-list-m li").forEach(li => {
-        tasks.M.push({ text: li.querySelector("span").textContent, priority: li.dataset.priority, completed: li.classList.contains("completed") });
+        tasks.N.push({ text: li.querySelector("span").textContent, priority: li.dataset.priority, completed: li.classList.contains("completed") });
       });
       localStorage.setItem("todoList", JSON.stringify(tasks));
     }
 
     function loadTasks() {
-      let savedTasks = JSON.parse(localStorage.getItem("todoList")) || { H: [], M: [] };
+      let savedTasks = JSON.parse(localStorage.getItem("todoList")) || { T: [], N: [] };
       let listH = document.getElementById("task-list-h");
       let listM = document.getElementById("task-list-m");
       
       listH.innerHTML = "";
       listM.innerHTML = "";
       
-      savedTasks.H.forEach(task => {
+      savedTasks.T.forEach(task => {
         let li = createTaskElement(task.text, task.priority, task.completed);
         listH.appendChild(li);
       });
-      savedTasks.M.forEach(task => {
+      savedTasks.N.forEach(task => {
         let li = createTaskElement(task.text, task.priority, task.completed);
         listM.appendChild(li);
       });
@@ -185,8 +188,8 @@
     <div class="task-inputs">
       <input type="text" id="task" placeholder="Enter task...">
       <select id="type">
-        <option value="H">H</option>
-        <option value="M">M</option>
+        <option value="H">T</option>
+        <option value="M">N</option>
       </select>
       <select id="priority">
         <option value="P1">P1</option>
