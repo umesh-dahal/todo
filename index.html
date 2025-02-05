@@ -93,7 +93,8 @@
     document.addEventListener("DOMContentLoaded", () => loadList());
 
     function toggleCompleted(event) {
-      event.target.classList.toggle("completed");
+      let task = event.currentTarget;
+      task.classList.toggle("completed");
       saveList();
     }
 
@@ -138,14 +139,26 @@
       if (!task) return;
       
       let list = document.getElementById("task-list");
+      let li = createTaskElement(task, type, priority, false);
+      list.appendChild(li);
+      
+      saveList();
+      document.getElementById("task").value = "";
+    }
+
+    function createTaskElement(text, type, priority, completed) {
       let li = document.createElement("li");
       li.dataset.type = type;
       li.dataset.priority = priority;
       
       let span = document.createElement("span");
-      span.textContent = `${task} [${type}] [${priority}]`;
+      span.textContent = `${text} [${type}] [${priority}]`;
       span.classList.add("task-text", priority.toLowerCase());
       li.onclick = toggleCompleted;
+      
+      if (completed) {
+        li.classList.add("completed");
+      }
       
       let delBtn = document.createElement("button");
       delBtn.textContent = "Del";
@@ -158,10 +171,7 @@
       
       li.appendChild(span);
       li.appendChild(delBtn);
-      list.appendChild(li);
-      
-      saveList();
-      document.getElementById("task").value = "";
+      return li;
     }
 
     function saveList() {
@@ -185,30 +195,7 @@
       list.innerHTML = "";
       
       tasks.forEach(task => {
-        let li = document.createElement("li");
-        li.dataset.type = task.type;
-        li.dataset.priority = task.priority;
-        
-        let span = document.createElement("span");
-        span.textContent = task.text;
-        span.classList.add("task-text", task.priority.toLowerCase());
-        li.onclick = toggleCompleted;
-        
-        if (task.completed) {
-          li.classList.add("completed");
-        }
-
-        let delBtn = document.createElement("button");
-        delBtn.textContent = "Del";
-        delBtn.classList.add("delete-button");
-        delBtn.onclick = function(event) {
-          event.stopPropagation();
-          li.remove();
-          saveList();
-        };
-        
-        li.appendChild(span);
-        li.appendChild(delBtn);
+        let li = createTaskElement(task.text, task.type, task.priority, task.completed);
         list.appendChild(li);
       });
     }
