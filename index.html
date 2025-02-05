@@ -127,6 +127,7 @@
         }
         list.appendChild(task);
       });
+      saveList();
     }
 
     function addTask() {
@@ -161,6 +162,55 @@
       
       saveList();
       document.getElementById("task").value = "";
+    }
+
+    function saveList() {
+      let tasks = [];
+      document.querySelectorAll("#task-list li").forEach(li => {
+        if (!li.classList.contains("separator")) {
+          tasks.push({
+            text: li.querySelector(".task-text").textContent,
+            type: li.dataset.type,
+            priority: li.dataset.priority,
+            completed: li.classList.contains("completed")
+          });
+        }
+      });
+      localStorage.setItem("todoList", JSON.stringify(tasks));
+    }
+
+    function loadList() {
+      let list = document.getElementById("task-list");
+      let tasks = JSON.parse(localStorage.getItem("todoList")) || [];
+      list.innerHTML = "";
+      
+      tasks.forEach(task => {
+        let li = document.createElement("li");
+        li.dataset.type = task.type;
+        li.dataset.priority = task.priority;
+        
+        let span = document.createElement("span");
+        span.textContent = task.text;
+        span.classList.add("task-text", task.priority.toLowerCase());
+        li.onclick = toggleCompleted;
+        
+        if (task.completed) {
+          li.classList.add("completed");
+        }
+
+        let delBtn = document.createElement("button");
+        delBtn.textContent = "Del";
+        delBtn.classList.add("delete-button");
+        delBtn.onclick = function(event) {
+          event.stopPropagation();
+          li.remove();
+          saveList();
+        };
+        
+        li.appendChild(span);
+        li.appendChild(delBtn);
+        list.appendChild(li);
+      });
     }
   </script>
 </head>
